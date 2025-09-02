@@ -25,6 +25,9 @@ internal interface IAdapter {
 
     fun onReceiveMessage(message: String) {
         try {
+            for (wsMsgReceive in WSGolab.msgReceiveList) {
+                if (wsMsgReceive.onReceive(message)) return
+            }
             val json = JsonParser.parseString(message).asJsonObject
             if (json.ignorable(META_EVENT, "") != HEART_BEAT) { // 过滤心跳
                 val echo = json.nullableInt("echo", null)
