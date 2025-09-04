@@ -80,11 +80,13 @@ internal class WSClient(
             CloseCode.valueOf(code) ?: code
         )
         unlockMutex()
-
-        // 自动重连
-        if (!scheduleClose) retry()
-        else loginBot?.eventDispatcher {
-            broadcastAsync(BotOfflineEvent.Active(it, null))
+        // 非主动
+        if ("主动关闭" != reason) {
+            // 自动重连
+            if (!scheduleClose) retry()
+            else loginBot?.eventDispatcher {
+                broadcastAsync(BotOfflineEvent.Active(it, null))
+            }
         }
     }
 
