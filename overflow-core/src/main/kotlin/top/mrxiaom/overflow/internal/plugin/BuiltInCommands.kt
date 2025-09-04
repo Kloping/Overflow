@@ -84,7 +84,8 @@ internal object BuiltInCommands {
             @Name("WS类型") wsType: WebSocketType,
             @Name("正向地址或反向端口") hostOrPort: String,
             @Name("是否为QQ平台") platform: Boolean = true,
-            @Name("连接令牌") token: String? = null
+            @Name("连接令牌") token: String? = null,
+            @Name("心跳") heartbeat: Int = 60
         ) {
             val finalBot = when (wsType) {
                 WebSocketType.POSITIVE -> BotBuilder.positive(hostOrPort)
@@ -93,6 +94,7 @@ internal object BuiltInCommands {
                 val config = Overflow.instance.config
                 if (token != null) it.token(token)
                 if (!platform) it.noPlatform()
+                it.heartbeatCheckSeconds(heartbeat)
                 it.retryTimes(config.retryTimes)
                 it.retryWaitMills(config.retryWaitMills)
                 it.retryRestMills(config.retryRestMills)
