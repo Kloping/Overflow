@@ -85,7 +85,7 @@ internal object BuiltInCommands {
             @Name("正向地址或反向端口") hostOrPort: String,
             @Name("是否为QQ平台") platform: Boolean = true,
             @Name("连接令牌") token: String? = null,
-            @Name("心跳") heartbeat: Int = 60
+            @Name("心跳") heartbeat: Int = 0
         ) {
             val finalBot = when (wsType) {
                 WebSocketType.POSITIVE -> BotBuilder.positive(hostOrPort)
