@@ -2,7 +2,7 @@ import java.util.*
 
 plugins {
     java
-    `groovy-gradle-plugin`
+    `java-gradle-plugin`
     `kotlin-dsl`
     id("com.github.gmazzo.buildconfig") version "3.1.0"
 }
@@ -33,6 +33,7 @@ dependencies {
     api(gradleApi())
     api(gradleKotlinDsl())
     api("com.google.code.gson:gson:2.10.1")
+    api("com.google.guava:guava:21.0")
 
     api("org.apache.httpcomponents:httpclient:4.5.13")
     api("org.apache.httpcomponents:httpmime:4.5.13")

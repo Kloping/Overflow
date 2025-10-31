@@ -50,7 +50,6 @@ println("Version: $version")
 
 mavenPublishing {
     publishingType = PublishingType.AUTOMATIC
-    url = "https://github.com/MrXiaoM/Overflow"
 }
 
 allprojects {
