@@ -110,7 +110,7 @@ class Overflow : IMirai, CoroutineScope, LowLevelApiAccessor, OverflowAPI {
     val config: Config by lazy {
         var config: Config? = null
         if (configFile.exists()) try {
-            config = json.decodeFromString(Config.serializer(), configFile.readText())
+            config = json.decodeFromString(Config.serializer(), configFile.readText().replace("\r", ""))
         } catch (t: Throwable) {
             val bak = File(configFile.parentFile, "${configFile.name}.old_${System.currentTimeMillis()}.bak")
             configFile.copyTo(bak, true)
