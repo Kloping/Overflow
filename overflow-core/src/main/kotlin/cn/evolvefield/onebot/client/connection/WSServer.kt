@@ -20,6 +20,7 @@ import org.java_websocket.server.DefaultWebSocketServerFactory
 import org.java_websocket.server.WebSocketServer
 import org.slf4j.Logger
 import java.net.InetSocketAddress
+import java.net.URLDecoder
 import kotlin.random.Random
 import kotlin.time.Duration
 
@@ -107,7 +108,7 @@ internal class WSServer(
                     return
                 }
             } else if (split.size > 1 && split[1].contains("access_token=")) {
-                val param = split[1].substringAfter("access_token=").substringBefore("&")
+                val param = URLDecoder.decode(split[1].substringAfter("access_token=").substringBefore("&"), "UTF-8")
                 if (param != token) {
                     conn.close(CloseFrame.NORMAL, "客户端提供的 token 错误")
                     return

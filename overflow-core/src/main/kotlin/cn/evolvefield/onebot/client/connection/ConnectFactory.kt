@@ -8,6 +8,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.InetSocketAddress
 import java.net.URI
+import java.net.URLEncoder
 
 /**
  * Description:
@@ -39,7 +40,7 @@ internal class ConnectFactory private constructor(
         builder.append(config.url)
         if (config.isAccessToken) {
             builder.append("?access_token=")
-            builder.append(config.token)
+            builder.append(URLEncoder.encode(config.token, "UTF-8"))
             header["Authorization"] = "Bearer ${config.token}"
         }
 
@@ -106,7 +107,7 @@ internal class ConnectFactory private constructor(
         builder.append(config.url)
         if (config.isAccessToken) {
             builder.append("?access_token=")
-            builder.append(config.token)
+            builder.append(URLEncoder.encode(config.token, "UTF-8"))
             header["Authorization"] = "Bearer ${config.token}"
         }
 
