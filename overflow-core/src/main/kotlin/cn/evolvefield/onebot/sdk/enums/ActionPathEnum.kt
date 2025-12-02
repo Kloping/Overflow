@@ -268,4 +268,18 @@ enum class ActionPathEnum(
      * 移动群文件
      */
     MOVE_GROUP_FILE("move_group_file"),
+
+    /**
+     * 重命名群文件
+     *
+     * 属于 NapCat 扩展 API
+     */
+    RENAME_GROUP_FILE("rename_group_file"),
+
+    /**
+     * 重命名群文件夹
+     *
+     * 属于 LLOnebot 扩展 API
+     */
+    RENAME_GROUP_FILE_FOLDER("rename_group_file_folder"),
 }

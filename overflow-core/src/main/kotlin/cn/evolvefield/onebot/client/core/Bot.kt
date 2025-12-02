@@ -15,7 +15,6 @@ import cn.evolvefield.onebot.sdk.response.contact.LoginInfoResp
 import cn.evolvefield.onebot.sdk.response.contact.StrangerInfoResp
 import cn.evolvefield.onebot.sdk.response.ext.CreateGroupFileFolderResp
 import cn.evolvefield.onebot.sdk.response.ext.GetFileResp
-import cn.evolvefield.onebot.sdk.response.ext.MoveGroupFIleResp
 import cn.evolvefield.onebot.sdk.response.ext.SetGroupReactionResp
 import cn.evolvefield.onebot.sdk.response.ext.UploadGroupFileResp
 import cn.evolvefield.onebot.sdk.response.group.*
@@ -1041,6 +1040,31 @@ internal class Bot(
     }
 
     /**
+     * 重命名群文件夹
+     * @param groupId 群号
+     * @param folderId 文件夹ID
+     * @param newName 目标文件夹名称
+     * @param context  Onebot 主动操作的上下文
+     */
+    @JvmBlockingBridge
+    @JvmOverloads
+    suspend fun renameGroupFIleFolder(
+        groupId: Long,
+        folderId: String,
+        newName: String,
+        context: Context = {},
+    ): ActionRaw {
+        val action = context.build(ActionPathEnum.RENAME_GROUP_FILE_FOLDER)
+        val params = JsonObject().apply {
+            addProperty("group_id", groupId)
+            addProperty("folder_id", folderId)
+            addProperty("new_folder_name", newName)
+        }
+        val result = actionHandler.action(this, action, params)
+        return result.withClass()
+    }
+
+    /**
      * 移动群文件
      * @param groupId 群号
      * @param fileId 文件ID
@@ -1056,7 +1080,7 @@ internal class Bot(
         currentParentDirectoryId: String,
         targetParentDirectoryId: String,
         context: Context = {},
-    ): ActionData<MoveGroupFIleResp> {
+    ): ActionRaw {
         val action = context.build(ActionPathEnum.MOVE_GROUP_FILE)
         val params = JsonObject().apply {
             addProperty("group_id", groupId)
@@ -1065,7 +1089,35 @@ internal class Bot(
             addProperty("target_parent_directory", targetParentDirectoryId)
         }
         val result = actionHandler.action(this, action, params)
-        return result.withToken()
+        return result.withClass()
+    }
+
+    /**
+     * 重命名群文件
+     * @param groupId 群号
+     * @param fileId 文件ID
+     * @param currentParentDirectoryId 目前父文件夹ID 参考 Folder 对象
+     * @param newName 目标文件名称
+     * @param context  Onebot 主动操作的上下文
+     */
+    @JvmBlockingBridge
+    @JvmOverloads
+    suspend fun renameGroupFIle(
+        groupId: Long,
+        fileId: String,
+        currentParentDirectoryId: String,
+        newName: String,
+        context: Context = {},
+    ): ActionRaw {
+        val action = context.build(ActionPathEnum.RENAME_GROUP_FILE)
+        val params = JsonObject().apply {
+            addProperty("group_id", groupId)
+            addProperty("file_id", fileId)
+            addProperty("current_parent_directory", currentParentDirectoryId)
+            addProperty("newName", newName)
+        }
+        val result = actionHandler.action(this, action, params)
+        return result.withClass()
     }
 
     /**

@@ -13,6 +13,7 @@ import net.mamoe.mirai.contact.file.AbsoluteFolder
 import net.mamoe.mirai.contact.file.RemoteFiles
 import net.mamoe.mirai.message.data.FileMessage
 import net.mamoe.mirai.utils.*
+import top.mrxiaom.overflow.internal.check
 import top.mrxiaom.overflow.internal.contact.GroupWrapper
 import top.mrxiaom.overflow.internal.contact.data.RemoteFilesWrapper.Companion.update
 import top.mrxiaom.overflow.internal.message.data.WrappedFileMessage
@@ -34,7 +35,7 @@ internal class RemoteFilesWrapper(
             }.data
 
             val root = FolderWrapper(
-                this, null, "/", "/", 0, 0, 0, data?.files?.size ?: 0
+                this, null, AbsoluteFolder.ROOT_FOLDER_ID, "/", 0, 0, 0, data?.files?.size ?: 0
             )
             if (data != null) {
                 root.update(data)
@@ -55,7 +56,7 @@ internal class FolderWrapper(
     override val contact: GroupWrapper,
     override val parent: AbsoluteFolder? = null,
     override val id: String,
-    override val name: String,
+    override var name: String,
     override val lastModifiedTime: Long,
     override val uploadTime: Long,
     override val uploaderId: Long,
@@ -95,7 +96,14 @@ internal class FolderWrapper(
     }
 
     override suspend fun renameTo(newName: String): Boolean {
-        TODO("暂无重命名文件夹实现")
+        if (!contact.bot.appName.lowercase().contains("llonebot")) {
+            throw PermissionDeniedException("当前 Onebot 实现不支持移动文件夹")
+        }
+        val success = impl.renameGroupFIleFolder(contact.id, id, newName).check("重命名文件夹失败，详见网络日志 (logs/onebot)")
+        if (success) {
+            this.name = newName
+        }
+        return success
     }
 
     override suspend fun children(): Flow<AbsoluteFileFolder> {
@@ -173,10 +181,10 @@ internal class FolderWrapper(
     }
 
     override suspend fun resolveFileById(id: String, deep: Boolean): AbsoluteFile? {
-        if (deep) {
-            TODO("暂不支持深入子目录查找文件")
-        }
-        return files.firstOrNull { it.id == id }
+        files.firstOrNull { it.id == id }?.let { return it }
+        if (!deep) return null
+
+        return folders.map { it.resolveFileById(id, true) }.firstOrNull() { it != null }
     }
 
     override suspend fun resolveFiles(path: String): Flow<AbsoluteFile> {
@@ -249,7 +257,7 @@ internal class FileWrapper(
     override val contact: GroupWrapper,
     override var parent: FolderWrapper,
     override val id: String,
-    override val name: String,
+    override var name: String,
     override val md5: ByteArray,
     override val sha1: ByteArray,
     override val size: Long,
@@ -298,7 +306,7 @@ internal class FileWrapper(
         if (folder !is FolderWrapper)
             return false
         val success =
-            impl.moveGroupFIle(contact.id, id, parent.id, folder.id).data?.ok ?: false
+            impl.moveGroupFIle(contact.id, id, parent.id, folder.id).check("移动文件失败，详见网络日志 (logs/onebot)")
         if (success) {
             parent.files.remove(this)
             parent = folder
@@ -317,7 +325,14 @@ internal class FileWrapper(
     }
 
     override suspend fun renameTo(newName: String): Boolean {
-        TODO("暂无重命名文件实现")
+        if (!contact.bot.appName.lowercase().contains("napcat")) {
+            throw PermissionDeniedException("当前 Onebot 实现不支持移动文件")
+        }
+        val success = impl.renameGroupFIle(contact.id, id, parent.id, newName).check("重命名文件失败，详见网络日志 (logs/onebot)")
+        if (success) {
+            this.name = newName
+        }
+        return success
     }
 
     override fun toMessage(): FileMessage {
