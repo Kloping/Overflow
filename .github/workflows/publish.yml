@@ -29,7 +29,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tmp
-          path: build/tmp/*
+          path: build/maven-publishing-stage/*
           if-no-files-found: error
       - name: Upload to Central Portal
         run: ./gradlew publishToMavenCentral
